@@ -29,7 +29,7 @@ private:
     IPAddress dns = IPAddress(8, 8, 8, 8); // DNS (Google)
 
     unsigned long timeout = 20000; // 20 seconds timeout
-    unsigned long reconnectInterval = 5000; // 30 seconds between
+    unsigned long reconnectInterval = 30000; // 30 seconds between
     unsigned long previousMillis = 0;
 };
 

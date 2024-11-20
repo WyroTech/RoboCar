@@ -1,7 +1,5 @@
 #ifndef _Camera
 #define _Camera
-#include "esp_camera.h"
-#include <WiFi.h>
 
 class Camera {
 public:

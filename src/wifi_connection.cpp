@@ -54,6 +54,8 @@ void WifiConnection::connect_to_wifi() {
     } else {
         Serial.println("\nConnection failed!");
     }
+
+    delay(1000);
 }
 
 bool WifiConnection::is_connected() {
@@ -66,13 +68,14 @@ void WifiConnection::check_for_wifi_connection_and_reconnect() {
         WiFi.disconnect();
         delay(1000);
         connect_to_wifi();
+    } else {
+        Serial.println("WiFi is connected!");
     }
 }
 
 void WifiConnection::loop() {
     const unsigned long currentMillis = millis();
     unsigned long overReconnectInterval = currentMillis - previousMillis;
-
 
     if (overReconnectInterval >= reconnectInterval) {
         previousMillis = currentMillis;

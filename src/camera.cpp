@@ -1,7 +1,9 @@
 #define CAMERA_MODEL_ESP32S3_EYE
 #include "camera.h"
+
+#include <esp_camera.h>
 #include "camera_pins.h"
-#include "esp_system.h"
+#include <Arduino.h>
 
 void Camera::camera_init(void) {
   camera_config_t config;
