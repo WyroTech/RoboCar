@@ -1,39 +1,55 @@
 #include "web_socket.h"
-#include "esp_camera.h"
 
-void WebSocket::init() {
-        Serial.print("Connect with Websocket ");
-        Serial.print(server_ip);
-        Serial.println("...");
-        webSocket.begin(server_ip, 8080, "/", "ws");
-        webSocket.onEvent(onEvent);
-        webSocket.setReconnectInterval(5000);
-        webSocket.enableHeartbeat(1000, 1000, 2);
+WebSocketHandler *WebSocketHandler::instance = nullptr;
+
+WebSocketHandler::WebSocketHandler(uint16_t port) : webSocket(port) {
+        instance = this;
 }
 
-void WebSocket::onEvent(WStype_t type, uint8_t *payload, size_t length) {
-        switch (type) {
-                case WStype_DISCONNECTED:
-                        Serial.println("Websocket disconnected!");
-                        break;
-                case WStype_CONNECTED:
-                        Serial.println("Websocket Connected!");
-                        break;
-                default:
-                        break;
-        }
+void WebSocketHandler::begin() {
+        webSocket.begin();
+        webSocket.onEvent(WebSocketHandler::webSocketEvent);
+        Serial.println("WebSocket server started");
 }
 
-void WebSocket::loop() {
+void WebSocketHandler::loop() {
         webSocket.loop();
+}
 
-        if (webSocket.isConnected()) {
-                send_image();
+void WebSocketHandler::sendMessage(uint8_t num, String &message) {
+        webSocket.sendTXT(num, message);
+}
+
+void WebSocketHandler::webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
+        if (instance) {
+                switch (type) {
+                        case WStype_DISCONNECTED:
+                                instance->handleDisconnection(num);
+                                break;
+
+                        case WStype_CONNECTED:
+                                instance->handleConnection(num, instance->webSocket.remoteIP(num));
+                                break;
+
+                        case WStype_TEXT:
+                                instance->handleMessage(num, payload, length);
+                                break;
+                }
         }
 }
 
-void WebSocket::send_image() {
-        camera_fb_t *fb = esp_camera_fb_get();
-        webSocket.sendBIN(fb->buf, fb->len);
-        esp_camera_fb_return(fb);
+void WebSocketHandler::handleDisconnection(uint8_t num) {
+        Serial.printf("[%u] Disconnected!\n", num);
+}
+
+void WebSocketHandler::handleConnection(uint8_t num, IPAddress ip) {
+        Serial.printf("[%u] Connected from %d.%d.%d.%d\n", num, ip[0], ip[1], ip[2], ip[3]);
+}
+
+void WebSocketHandler::handleMessage(uint8_t num, uint8_t *payload, size_t length) {
+        String message = String((char *) payload);
+        Serial.printf("[%u] Received text: %s\n", num, message.c_str());
+
+        // Echo the message back to the client
+        sendMessage(num, message);
 }

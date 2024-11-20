@@ -7,7 +7,7 @@
 Camera my_camera;
 System my_system;
 WifiConnection wifi_connection;
-WebSocket web_socket;
+WebSocketHandler web_socket;
 
 void setup() {
     my_system.init();
@@ -20,15 +20,15 @@ void setup() {
     my_camera.camera_init();
     my_camera.test_camera();
 
-    web_socket.init();
+    //web_socket.begin();
 
     Serial.println("Setup done");
 }
 
 void loop() {
-    wifi_connection.loop();
-    web_socket.loop();
-    delay(1000);
+    //wifi_connection.loop();
+    //web_socket.loop();
+    //Serial.println("Loop done");
 }
 
 

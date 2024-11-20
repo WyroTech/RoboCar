@@ -30,7 +30,6 @@ void WifiConnection::scan_wifi() {
     }
     Serial.println("No matching WiFi found called ");
     Serial.println(ssid);
-    return;
 }
 
 void WifiConnection::connect_to_wifi() {
@@ -59,7 +58,7 @@ void WifiConnection::connect_to_wifi() {
 }
 
 bool WifiConnection::is_connected() {
-  return WiFi.status() == WL_CONNECTED;
+    return WiFi.status() == WL_CONNECTED;
 }
 
 void WifiConnection::check_for_wifi_connection_and_reconnect() {
