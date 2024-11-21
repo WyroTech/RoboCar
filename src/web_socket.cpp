@@ -2,7 +2,7 @@
 
 WebSocketHandler *WebSocketHandler::instance = nullptr;
 
-WebSocketHandler::WebSocketHandler(uint16_t port) : webSocket(port) {
+WebSocketHandler::WebSocketHandler(uint16_t port, Camera *camera) : camera(camera), webSocket(port) {
         instance = this;
 }
 
@@ -14,6 +14,9 @@ void WebSocketHandler::begin() {
 
 void WebSocketHandler::loop() {
         webSocket.loop();
+        for (const int connected_client: connectedClients) {
+                sendImage(connected_client);
+        }
 }
 
 void WebSocketHandler::sendMessage(uint8_t num, String &message) {
@@ -39,10 +42,12 @@ void WebSocketHandler::webSocketEvent(uint8_t num, WStype_t type, uint8_t *paylo
 }
 
 void WebSocketHandler::handleDisconnection(uint8_t num) {
+        this->connectedClients.remove(num);
         Serial.printf("[%u] Disconnected!\n", num);
 }
 
 void WebSocketHandler::handleConnection(uint8_t num, IPAddress ip) {
+        this->connectedClients.push_back(num);
         Serial.printf("[%u] Connected from %d.%d.%d.%d\n", num, ip[0], ip[1], ip[2], ip[3]);
 }
 
@@ -52,4 +57,10 @@ void WebSocketHandler::handleMessage(uint8_t num, uint8_t *payload, size_t lengt
 
         // Echo the message back to the client
         sendMessage(num, message);
+}
+
+void WebSocketHandler::sendImage(const uint8_t num) {
+        const auto fb = camera->get_image();
+        webSocket.sendBIN(num, fb->buf, fb->len);
+        camera->clear_image(fb);
 }

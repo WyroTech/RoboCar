@@ -106,3 +106,12 @@ void Camera::test_camera() {
   Serial.println("Camera init successful!");
 }
 
+camera_fb_t *Camera::get_image() {
+  camera_fb_t *fb = esp_camera_fb_get();
+  return fb;
+}
+
+void Camera::clear_image(camera_fb_t *fb) {
+  esp_camera_fb_return(fb);
+}
+
