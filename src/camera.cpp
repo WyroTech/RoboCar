@@ -31,7 +31,7 @@ void Camera::camera_init(void) {
   // config.pixel_format = PIXFORMAT_RGB565; // for face detection/recognition
   config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
   config.fb_location = CAMERA_FB_IN_PSRAM;
-  config.jpeg_quality = 10;
+  config.jpeg_quality = 0;
   config.fb_count = 2;
   //init with high specs to pre-allocate larger buffers
   if (config.pixel_format == PIXFORMAT_JPEG) {
@@ -66,10 +66,12 @@ void Camera::camera_init(void) {
 
   sensor_t *s = esp_camera_sensor_get();
 
+  s->set_vflip(s, 1); // flip it back
+  s->set_brightness(s, 5); // up the brightness just a bit
+  s->set_saturation(s, 0); // lower the saturation
+  s->set_exposure_ctrl(s, 10); // increase the exposure a bit
   if (s->id.PID == OV3660_PID) {
-    s->set_vflip(s, 1); // flip it back
-    s->set_brightness(s, 1); // up the brightness just a bit
-    s->set_saturation(s, -2); // lower the saturation
+    Serial.printf("Detected OV3660");
   }
   // drop down frame size for higher initial frame rate
   if (config.pixel_format == PIXFORMAT_JPEG) {
