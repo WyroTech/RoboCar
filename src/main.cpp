@@ -7,7 +7,7 @@
 Camera my_camera;
 System my_system;
 WifiConnection wifi_connection;
-WebSocketHandler web_socket = WebSocketHandler(81);
+WebSocketHandler web_socket = WebSocketHandler(81, &my_camera);
 
 void setup() {
     my_system.init();
@@ -28,7 +28,7 @@ void setup() {
 void loop() {
     wifi_connection.loop();
     web_socket.loop();
-    delay(10);
+    delay(5);
 }
 
 
