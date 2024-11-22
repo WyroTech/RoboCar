@@ -6,6 +6,9 @@
 #include "esp_system.h"
 #include <Arduino.h>
 
+#define RXD2 3
+#define TXD2 40
+
 void System::print_system_info() {
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
@@ -28,6 +31,7 @@ void System::print_system_info() {
 
 void System::init() {
     Serial.begin(SERIAL_CHANNEL);
+    Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
     delay(1000);
     Serial.println("Starting up");
 }

@@ -33,7 +33,7 @@ private:
 
     void handleMessage(uint8_t num, uint8_t *payload, size_t length);
 
-    void sendImage(uint8_t num);
+    void sendImage(uint8_t num, camera_fb_t *fb);
 };
 
 #endif

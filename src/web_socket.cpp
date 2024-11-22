@@ -14,8 +14,12 @@ void WebSocketHandler::begin() {
 
 void WebSocketHandler::loop() {
         webSocket.loop();
-        for (const int connected_client: connectedClients) {
-                sendImage(connected_client);
+        if (!connectedClients.empty()) {
+                const auto fb = camera->get_image();
+                for (const int connected_client: connectedClients) {
+                        sendImage(connected_client, fb);
+                }
+                camera->clear_image(fb);
         }
 }
 
@@ -54,13 +58,12 @@ void WebSocketHandler::handleConnection(uint8_t num, IPAddress ip) {
 void WebSocketHandler::handleMessage(uint8_t num, uint8_t *payload, size_t length) {
         String message = String((char *) payload);
         Serial.printf("[%u] Received text: %s\n", num, message.c_str());
+        Serial2.println(message);
 
         // Echo the message back to the client
         sendMessage(num, message);
 }
 
-void WebSocketHandler::sendImage(const uint8_t num) {
-        const auto fb = camera->get_image();
+void WebSocketHandler::sendImage(const uint8_t num, camera_fb_t *fb) {
         webSocket.sendBIN(num, fb->buf, fb->len);
-        camera->clear_image(fb);
 }
