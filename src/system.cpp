@@ -31,7 +31,13 @@ void System::print_system_info() {
 
 void System::init() {
     Serial.begin(SERIAL_CHANNEL);
-    Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
     delay(1000);
+    Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
+    delay(500);
+    if (Serial2) {
+        Serial.println("Serial2 initialized successfully");
+    } else {
+        Serial.println("Serial2 initialization failed");
+    }
     Serial.println("Starting up");
 }

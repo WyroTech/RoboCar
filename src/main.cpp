@@ -12,6 +12,7 @@ WebSocketHandler web_socket = WebSocketHandler(81, &my_camera);
 void setup() {
     my_system.init();
     my_system.print_system_info();
+    Serial.println("Init finished");
 
     wifi_connection.change_to_wifi_station_mode();
     wifi_connection.scan_wifi();
