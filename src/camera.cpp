@@ -66,6 +66,7 @@ void Camera::camera_init(void) {
   sensor_t *s = esp_camera_sensor_get();
 
   s->set_vflip(s, 1); // flip it back
+  s->set_hmirror(s, 1);
   s->set_brightness(s, 5); // up the brightness just a bit
   s->set_saturation(s, 0); // lower the saturation
   s->set_exposure_ctrl(s, 10); // increase the exposure a bit
