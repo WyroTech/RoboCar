@@ -28,7 +28,7 @@ void setup() {
 void loop() {
     wifi_connection.loop();
     web_socket.loop();
-    delay(5);
+    delay(10);
 }
 
 
