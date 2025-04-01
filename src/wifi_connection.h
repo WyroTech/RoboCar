@@ -21,8 +21,8 @@ public:
     void loop();
 
 private:
-    const char *ssid = "WLAN-686386";
-    const char *password = "78744264384698314996";
+    const char *ssid = "WLAN-XXX";
+    const char *password = "XXX";
     IPAddress staticIP = IPAddress(192, 168, 2, 123); // Your static IP
     IPAddress gateway = IPAddress(192, 168, 2, 1); // Your gateway IP
     IPAddress subnet = IPAddress(255, 255, 255, 0); // Your subnet mask
