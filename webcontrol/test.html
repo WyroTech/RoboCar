@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 WebSocket Test</title>
+</head>
+<body>
+<input id="slider" type="range" name="points" min="50" max="255" value="100">
+<input type="text" id="messageInput" placeholder="Enter message">
+<button onclick="sendMessage()">Send</button>
+<img id="imageDisplay" alt="Image will be displayed here" style="max-width: 100%; height: auto;">
+<div id="messages"></div>
+
+
+<script>
+    // Replace with your ESP32's IP address
+    const ws = new WebSocket('ws://192.168.2.123:81');
+    let speed = 100;
+
+    ws.onopen = function () {
+        console.log('Connected to ESP32');
+        handleIncomingMessage('Connected to ESP32');
+    };
+
+    ws.onmessage = function (evt) {
+        handleIncomingMessage(evt.data);
+    };
+
+    ws.onclose = function () {
+        console.log('Disconnected');
+        handleIncomingMessage('Disconnected');
+    };
+
+    function sendMessage() {
+        const message = document.getElementById('messageInput').value;
+        ws.send(message);
+        handleIncomingMessage('Sent: ' + message);
+    }
+
+    function handleIncomingMessage(message) {
+        if (event.data instanceof Blob) {
+            // Create a URL for the blob
+            const blobUrl = URL.createObjectURL(event.data);
+
+            // Display the blob as an image
+            const imageElement = document.getElementById('imageDisplay');
+            imageElement.src = blobUrl;
+
+            // Optionally, revoke the object URL after the image is loaded
+            imageElement.onload = function () {
+                URL.revokeObjectURL(blobUrl);
+            };
+        } else {
+            //console.log(message);
+            //const messagesDiv = document.getElementById('messages');
+            //messagesDiv.innerHTML += '<div>' + message + '</div>';
+        }
+    }
+
+    let lastCommand = undefined;
+
+    function sendInput(command) {
+        if (lastCommand === command) {
+            return;
+        }
+        lastCommand = command;
+        ws.send(JSON.stringify({command, speed}));
+        console.log('Sent: ' + command);
+    }
+
+    COMMANDS = {
+        STOP: 0,
+        UP: 1,
+        DOWN: 2,
+        LEFT: 3,
+        RIGHT: 4,
+        UP_LEFT: 5,
+        UP_RIGHT: 6,
+        DOWN_LEFT: 7,
+        DOWN_RIGHT: 8,
+    }
+
+    const keys = {
+        up: false,
+        down: false,
+        left: false,
+        right: false
+    };
+
+    function checkInput() {
+        if (keys.up && keys.left) {
+            sendInput(COMMANDS.UP_LEFT);
+        } else if (keys.up && keys.right) {
+            sendInput(COMMANDS.UP_RIGHT);
+        } else if (keys.down && keys.left) {
+            sendInput(COMMANDS.DOWN_LEFT);
+        } else if (keys.down && keys.right) {
+            sendInput(COMMANDS.DOWN_RIGHT);
+        } else if (keys.up) {
+            sendInput(COMMANDS.UP);
+        } else if (keys.down) {
+            sendInput(COMMANDS.DOWN);
+        } else if (keys.left) {
+            sendInput(COMMANDS.LEFT);
+        } else if (keys.right) {
+            sendInput(COMMANDS.RIGHT);
+        } else {
+            sendInput(COMMANDS.STOP);
+        }
+    }
+
+    document.addEventListener("keydown", (e) => {
+        switch (e.key) {
+            case 'w':
+            case 'ArrowUp':
+                keys.up = true;
+                break;
+            case 's':
+            case 'ArrowDown':
+                keys.down = true;
+                break;
+            case 'a':
+            case 'ArrowLeft':
+                keys.left = true;
+                break;
+            case 'd':
+            case 'ArrowRight':
+                keys.right = true;
+                break;
+        }
+        checkInput();
+    });
+
+    document.addEventListener("keyup", (e) => {
+        console.log(e.key);
+        switch (e.key) {
+            case 'w':
+            case 'ArrowUp':
+                keys.up = false;
+                break;
+            case 's':
+            case 'ArrowDown':
+                keys.down = false;
+                break;
+            case 'a':
+            case 'ArrowLeft':
+                keys.left = false;
+                break;
+            case 'd':
+            case 'ArrowRight':
+                keys.right = false;
+                break;
+        }
+        checkInput();
+    });
+
+    document.querySelector('#slider').addEventListener('input', function (event) {
+        speed = event.target.value;
+    });
+
+</script>
+</body>
+</html>
