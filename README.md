@@ -1,5 +1,7 @@
 # 🚘 RoboCar - WiFi Controlled Robot Car with Python Backend and Camera Streaming
 
+<img src="car.webp" width="300">
+
 This project provides the firmware and backend code for controlling an Elegoo Smart Robot Car (likely V4.0 or similar). It uses a three-tier architecture:
 
 1.  **Robot:** An ESP32 microcontroller handles Wi-Fi, camera input, and communication with the Python backend (via WebSockets) and a local Arduino board (via JSON/Serial). The Arduino controls the motors.
